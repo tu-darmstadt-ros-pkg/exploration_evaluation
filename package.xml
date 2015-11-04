@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package>
+  <name>exploration_evaluation</name>
+  <version>0.0.0</version>
+  <description>The exploration_evaluation package</description>
+
+  <maintainer email="kohlbrecher@sim.tu-darmstadt.de">Stefan Kohlbrecher</maintainer>
+  <author email="kohlbrecher@sim.tu-darmstadt.de">Stefan Kohlbrecher</author>
+
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>hector_worldmodel_msgs</build_depend>
+  <build_depend>nav_msgs</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>sar_msgs</build_depend>
+  <build_depend>task_msgs</build_depend>
+  <run_depend>hector_worldmodel_msgs</run_depend>
+  <run_depend>nav_msgs</run_depend>
+  <run_depend>rospy</run_depend>
+  <run_depend>sar_msgs</run_depend>
+  <run_depend>task_msgs</run_depend>
+
+  <export>
+  </export>
+</package>
