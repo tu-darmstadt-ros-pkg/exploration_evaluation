@@ -32,7 +32,7 @@ class ExplorationTester:
       
       
       
-    def send_autonomy_start:
+    def send_autonomy_start(self):
                   # re-send data for mapping or sar mission
             #if self._widget.sar_radiobutton.isChecked():
             #    self._on_sar_radiobutton_pressed()
@@ -85,14 +85,14 @@ class ExplorationTester:
                     err_msg += str(e)
                     self._write_message(err_msg)
                 
-            self._autonomyPublisher.publish(True)
-            self._autonomous = True
-            self._widget.autonomy_button.setText(self._stopAutonomyText)
-            self._write_message('started autonomy')
+                self._autonomyPublisher.publish(True)
+                self._autonomous = True
+                #self._widget.autonomy_button.setText(self._stopAutonomyText)
+                #self._write_message('started autonomy')
             
-            self._widget.start_mode_combobox.setCurrentIndex(4)
+                #self._widget.start_mode_combobox.setCurrentIndex(4)
             
-            self._on_add_test_object()
+                #self._on_add_test_object()
   
 
 
