@@ -50,6 +50,8 @@ class ExplorationTester:
       self._autonomy_start_time = rospy.Time.now()
       
       self._publisher = rospy.Publisher("victimAnswer", VictimAnswer, queue_size=5)
+      
+      self._sys_command_publisher = rospy.Publisher("syscommand", String, queue_size=5)
       self._autonomyPublisher = rospy.Publisher('taskallocation/startAutonomy', Bool, queue_size=5)
       
       rospy.sleep(0.2)
@@ -57,7 +59,7 @@ class ExplorationTester:
       self._subscriber = rospy.Subscriber("victimFound", Victims, self._on_victim_found)
       self._map_sub = rospy.Subscriber('scanmatcher_map', OccupancyGrid, self.handle_occupancy_grid)
       
-      rospy.sleep(0.2)
+      rospy.sleep(30)
       
       self.send_autonomy_start()
       
@@ -252,3 +254,12 @@ if __name__ == "__main__":
           
         rospy.loginfo("Experiment at " + exploration_tester._date_string + " ended.")
         rospy.loginfo("Robot found " + str(exploration_tester._num_victims_found) + " victims.")
+        
+        rospy.loginfo("Saving GeoTiff...")
+        geotiff_string = String()
+        geotiff_string = "savegeotiff"
+        exploration_tester._sys_command_publisher.publish(geotiff_string)
+        
+        rospy.sleep(10)
+        rospy.loginfo("Done. Exiting.")
+        
