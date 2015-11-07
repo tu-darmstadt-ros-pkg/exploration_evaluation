@@ -7,7 +7,7 @@ while :
 do
         roscore&
         sleep 10
-        #optirun roslaunch exploration_evaluation launch_eval_complete.launch
+        optirun roslaunch exploration_evaluation launch_eval_complete.launch
         echo Ran $COUNTER experiments
         ((COUNTER+=1))
         sleep 10
