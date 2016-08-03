@@ -1,12 +1,10 @@
 <?xml version="1.0"?>
+<arg name="arena" default="exploration_eval_arena" />
 
-<launch>
-  
+<launch> 
   <node pkg="exploration_evaluation" type="exploration_test_node.py" name="exploration_test_node" output="screen" required="true">
   </node>
 
-  <include file="$(find hector_nist_arena_worlds)/launch/exploration_eval_arena.launch"/>
-  
-  <include file="$(find hector_launch)/launch/sar_all.launch"/>
-  
+  <include file="$(find hector_nist_arena_worlds)/launch/$(arg arena).launch"/> 
+  <include file="$(find hector_tracker_sim_launch)/launch/spawn_tracker_with_ground_truth.launch"/>
 </launch>
