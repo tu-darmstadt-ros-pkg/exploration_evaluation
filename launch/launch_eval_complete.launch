@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<arg name="arena" default="exploration_eval_arena" />
-
 <launch> 
+  <arg name="arena" default="exploration_eval_arena" />
+
   <node pkg="exploration_evaluation" type="exploration_test_node.py" name="exploration_test_node" output="screen" required="true">
   </node>
 
