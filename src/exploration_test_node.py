@@ -238,28 +238,35 @@ class ExplorationTester:
      #     rospy.sleep(0.1)
           
 if __name__ == "__main__":
-        rospy.init_node("exploration_evaluation")
-        try:
-                rospy.sleep(0.5)
-        except rospy.exceptions.ROSInterruptException:
-                pass
-        exploration_tester = ExplorationTester()
+    '''Creates an instance of ExplorationTester for a specified time. 
+    Afterwards prints statistics and saves map.
+    '''
+    rospy.init_node("exploration_evaluation")
+    try:
+        rospy.sleep(0.5)
+    except rospy.exceptions.ROSInterruptException:
+        pass
+
+    exploration_instance = ExplorationTester()
+
+    r = rospy.Rate(10) # 10hz
+    
+    #script runtime: 600 sec sim-time.
+    while not (rospy.Time.now() - exploration_instance._autonomy_start_time).to_sec() > 60 * 10:
+        r.sleep()
+    
+    printAndSaveExplorationStatistics(exploration_instance)
+    
+    rospy.sleep(10)
+    rospy.loginfo("ExplorationTester done. Exiting.")
+
+
+def printAndSaveExplorationStatistics(exploration_instance):
+    rospy.loginfo("Experiment at " + exploration_instance.date_string + " ended.")
+    rospy.loginfo("Robot found " + str(exploration_instance.num_victims_found) + " victims.")
         
-        #rospy.spin()
-        
-        r = rospy.Rate(10) # 10hz
-        
-        while not (rospy.Time.now() - exploration_tester._autonomy_start_time).to_sec() > 60 * 10:
-          r.sleep()
-          
-        rospy.loginfo("Experiment at " + exploration_tester._date_string + " ended.")
-        rospy.loginfo("Robot found " + str(exploration_tester._num_victims_found) + " victims.")
-        
-        rospy.loginfo("Saving GeoTiff...")
-        geotiff_string = String()
-        geotiff_string = "savegeotiff"
-        exploration_tester._sys_command_publisher.publish(geotiff_string)
-        
-        rospy.sleep(10)
-        rospy.loginfo("Done. Exiting.")
-        
+    rospy.loginfo("Saving GeoTiff...")
+    geotiff_string = String()
+    geotiff_string = "savegeotiff"
+    exploration_instance.sys_command_publisher.publish(geotiff_string)
+
