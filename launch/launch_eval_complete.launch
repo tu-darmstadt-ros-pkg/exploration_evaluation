@@ -6,5 +6,10 @@
   </node>
 
   <include file="$(find hector_nist_arena_worlds)/launch/$(arg arena).launch"/> 
-  <include file="$(find hector_tracker_sim_launch)/launch/spawn_tracker_with_ground_truth.launch"/>
+  <include file="$(find hector_tracker_sim_launch)/launch/spawn_tracker_with_ground_truth.launch">
+    <arg name="s_x_pos" value="0" />
+    <arg name="s_y_pos" value="0" />
+    <arg name="s_z_pos" value="0.2" />
+  </include>
+
 </launch>

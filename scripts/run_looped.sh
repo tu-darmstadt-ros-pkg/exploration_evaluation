@@ -16,6 +16,7 @@ if [ ! -z "$1" ]; then
         sleep 10
         pkill roscore
         pkill gazebo
+        pkill apport
         sleep 10
     done
 
@@ -31,6 +32,7 @@ else
         sleep 10
         pkill roscore
         pkill gazebo
+        pkill apport
         sleep 10
     done
 fi
