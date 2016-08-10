@@ -38,7 +38,7 @@ class ExplorationTester(object):
         self._publisher = None
         self.sys_command_publisher = None
         self._subscriber = None
-        self._map_sub = None
+        self._map_subscriber = None
 
         rospy.loginfo("Init ExplorationTester")
       
@@ -70,7 +70,7 @@ class ExplorationTester(object):
     def init_subscribers(self):
         '''Initializes subscribers used during exploration.'''
         self._subscriber = rospy.Subscriber("victimFound", Victims, self.handle_victim_found)
-        self._map_sub = rospy.Subscriber('scanmatcher_map', OccupancyGrid, self.handle_occupancy_grid)
+        self._map_subscriber = rospy.Subscriber('scanmatcher_map', OccupancyGrid, self.handle_occupancy_grid)
 
 
     def handle_victim_found(self, message):
@@ -136,7 +136,7 @@ class ExplorationTester(object):
         rospy.loginfo("FlexBe exploration behavior activated.")
 
 
-    def map_timer_callback(self):
+    def map_timer_callback(self, event):
         '''Callback for writing map exploration progress.'''
         self.write_map_exploration_progress_entry()
 
