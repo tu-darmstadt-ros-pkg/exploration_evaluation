@@ -7,6 +7,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   sar_msgs
   task_msgs
+  flexbe_msgs
 )
 
 catkin_package(
