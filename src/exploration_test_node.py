@@ -7,6 +7,7 @@ from std_msgs.msg import Bool, String
 from std_srvs.srv import Empty
 from nav_msgs.msg import OccupancyGrid
 from sar_msgs.msg import VictimAnswer, Victims
+from flexbe_msgs.msg import BehaviorExecutionActionGoal
 import rospy
 import roslib; roslib.load_manifest('exploration_evaluation')
 
@@ -37,6 +38,7 @@ class ExplorationTester(object):
         # ROS Publishers & Subscribers
         self._publisher = None
         self.sys_command_publisher = None
+        self._behavior_publisher = None
         self._subscriber = None
         self._map_subscriber = None
 
@@ -65,6 +67,8 @@ class ExplorationTester(object):
         '''Initializes publishers used during exploration.'''
         self._publisher = rospy.Publisher("victimAnswer", VictimAnswer, queue_size=5)
         self.sys_command_publisher = rospy.Publisher("syscommand", String, queue_size=5)
+        self._behavior_publisher = rospy.Publisher('/flexbe/execute_behavior/goal', BehaviorExecutionActionGoal, queue_size=5)
+
 
 
     def init_subscribers(self):
@@ -116,9 +120,12 @@ class ExplorationTester(object):
         '''Starts FlexBe exploration behavior and starts callback for logging
         map exploration progress.
         '''
+
         unpause_physics_client = rospy.ServiceProxy('/gazebo/unpause_physics', Empty)
         unpause_physics_client()
+        rospy.loginfo("Gazebo sim activated.")
 
+        rospy.sleep(10)
         self.start_exploration()
 
         self.autonomy_start_time = rospy.Time.now()
@@ -132,8 +139,10 @@ class ExplorationTester(object):
 
     def start_exploration(self):
         '''Task that starts exploration flexbe behavior.'''
-        #TODO: not yet implemented.
         rospy.loginfo("FlexBe exploration behavior activated.")
+        msg = BehaviorExecutionActionGoal()
+        msg.goal.behavior_name = 'Exploration'
+        self._behavior_publisher.publish(msg)
 
 
     def map_timer_callback(self, event):
@@ -185,16 +194,11 @@ if __name__ == "__main__":
     while not (rospy.Time.now() - exploration_instance.autonomy_start_time).to_sec() > 5 * 10:
         r.sleep()
     
-    print_and_save_exploration_statistics(exploration_instance)
-    
     exploration_instance.close_file_writers()
 
-    rospy.sleep(10)
+    time.sleep(10)
     rospy.loginfo("ExplorationTester done. Exiting.")
 
-
-def print_and_save_exploration_statistics(exploration_instance):
-    '''Prints final statistics of exploration trial and saves map.'''
     rospy.loginfo("Experiment at " + exploration_instance.date_string + " ended.")
     rospy.loginfo("Robot found " + str(exploration_instance.num_victims_found) + " victims.")
         
