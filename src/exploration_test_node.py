@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 import csv
+import time
 from time import gmtime, strftime
 from std_msgs.msg import *
 from std_msgs.msg import Bool, String
+from std_srvs.srv import Empty
 from nav_msgs.msg import OccupancyGrid
 from sar_msgs.msg import VictimAnswer, Victims
 import rospy
@@ -35,7 +37,6 @@ class ExplorationTester(object):
         # ROS Publishers & Subscribers
         self._publisher = None
         self.sys_command_publisher = None
-        self._autonomy_publisher = None
         self._subscriber = None
         self._map_sub = None
 
@@ -44,9 +45,9 @@ class ExplorationTester(object):
         self.init_map_and_victim_files()
 
         self.init_publishers()
-        rospy.sleep(0.2)    
+        time.sleep(0.2)    
         self.init_subscribers()
-        rospy.sleep(30)
+        time.sleep(30)
       
         self.send_autonomy_start()
 
@@ -64,7 +65,6 @@ class ExplorationTester(object):
         '''Initializes publishers used during exploration.'''
         self._publisher = rospy.Publisher("victimAnswer", VictimAnswer, queue_size=5)
         self.sys_command_publisher = rospy.Publisher("syscommand", String, queue_size=5)
-        self._autonomy_publisher = rospy.Publisher('taskallocation/startAutonomy', Bool, queue_size=5)
 
 
     def init_subscribers(self):
@@ -116,12 +116,15 @@ class ExplorationTester(object):
         '''Starts FlexBe exploration behavior and starts callback for logging
         map exploration progress.
         '''
+        unpause_physics_client = rospy.ServiceProxy('/gazebo/unpause_physics', Empty)
+        unpause_physics_client()
+
         self.start_exploration()
 
         self.autonomy_start_time = rospy.Time.now()
         self.write_map_exploration_progress_entry()
         
-        self._autonomy_publisher.publish(True)
+        #self._autonomy_publisher.publish(True)
         self._autonomous = True
         
         self._map_timer = rospy.Timer(rospy.Duration(10), self.map_timer_callback)
@@ -171,10 +174,8 @@ if __name__ == "__main__":
     Afterwards prints statistics and saves map.
     '''
     rospy.init_node("exploration_evaluation")
-    try:
-        rospy.sleep(0.5)
-    except rospy.exceptions.ROSInterruptException:
-        pass
+
+    time.sleep(0.5)
 
     exploration_instance = ExplorationTester()
 
