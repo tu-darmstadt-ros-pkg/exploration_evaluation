@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<launch> 
+<launch>
   <arg name="arena" default="exploration_eval_arena" />
 
-  <node pkg="exploration_evaluation" type="exploration_test_node.py" name="exploration_test_node" output="screen" required="true">
-  </node>
+  <node pkg="exploration_evaluation" type="exploration_test_node.py" name="exploration_test_node" output="screen" required="true" />
+  <node name="behavior_server_launcher" pkg="flexbe_widget" type="be_action_server" output="screen" />
 
-  <include file="$(find hector_nist_arena_worlds)/launch/$(arg arena).launch"/> 
+  <include file="$(find hector_nist_arena_worlds)/launch/$(arg arena).launch" /> 
   <include file="$(find hector_tracker_sim_launch)/launch/spawn_tracker_with_ground_truth.launch">
     <arg name="s_x_pos" value="0" />
     <arg name="s_y_pos" value="0" />
-    <arg name="s_z_pos" value="0.2" />
+    <arg name="s_z_pos" value="0.2" /> 
   </include>
 
 </launch>
