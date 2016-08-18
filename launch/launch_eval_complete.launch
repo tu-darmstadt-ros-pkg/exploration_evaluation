@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <launch>
-  <arg name="arena" default="exploration_eval_arena" />
+  <arg name="arena" default="maze_many_victims" />
 
   <node pkg="exploration_evaluation" type="exploration_test_node.py" name="exploration_test_node" output="screen" required="true" />
   <node name="behavior_server_launcher" pkg="flexbe_widget" type="be_action_server" output="screen" />
