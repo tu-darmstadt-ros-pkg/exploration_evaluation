@@ -141,7 +141,7 @@ class ExplorationTester(object):
         '''Task that starts exploration flexbe behavior.'''
         rospy.loginfo("FlexBe exploration behavior activated.")
         msg = BehaviorExecutionActionGoal()
-        msg.goal.behavior_name = 'Exploration'
+        msg.goal.behavior_name = 'Search Victims'
         self._behavior_publisher.publish(msg)
 
 
