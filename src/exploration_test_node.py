@@ -190,8 +190,8 @@ if __name__ == "__main__":
 
     r = rospy.Rate(10) # 10hz
     
-    # 50 sec. sim-time.
-    while not (rospy.Time.now() - exploration_instance.autonomy_start_time).to_sec() > 5 * 10:
+    # 600 sec. sim-time.
+    while not (rospy.Time.now() - exploration_instance.autonomy_start_time).to_sec() > 60 * 10:
         r.sleep()
     
     exploration_instance.close_file_writers()
