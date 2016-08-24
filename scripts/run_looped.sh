@@ -8,6 +8,7 @@
 # $3: Behavior that will be started.
 # $4: Arena that will be used.
 # $5: Path to script that copies geotiff maps (and its parameters). See hector_jenkins repo.
+# $6: Path to script that saves logfiles. See hector_jenkins repo.
 
 COUNTER=1
 
@@ -45,6 +46,10 @@ while [ $COUNTER -le $TRIALS ]
         # Saving geotiff if $5 exists.
         if [ ! -z "$5" ]; then
             $5 $COUNTER
+        fi
+        # Saving log if $6 exists.
+        if [ ! -z "$6" ]; then
+            $6 $COUNTER
         fi
         echo Ran $COUNTER experiments
         ((COUNTER+=1))
