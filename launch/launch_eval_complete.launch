@@ -1,6 +1,11 @@
 <?xml version="1.0"?>
 <launch>
   <arg name="arena" default="maze_many_victims" />
+  <arg name="mission_behavior" default="Search Victims" />
+  <arg name="mission_sim_time" default="50" />
+
+  <param name="mission_behavior" value="$(arg mission_behavior)" />
+  <param name="mission_sim_time" value="$(arg mission_sim_time)" />
 
   <node pkg="exploration_evaluation" type="exploration_test_node.py" name="exploration_test_node" output="screen" required="true" />
   <node name="behavior_server_launcher" pkg="flexbe_widget" type="be_action_server" output="screen" />

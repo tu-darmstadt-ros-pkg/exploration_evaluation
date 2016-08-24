@@ -6,7 +6,6 @@ from std_msgs.msg import *
 from std_msgs.msg import Bool, String
 from std_srvs.srv import Empty
 from nav_msgs.msg import OccupancyGrid
-from sar_msgs.msg import VictimAnswer, Victims
 from flexbe_msgs.msg import BehaviorExecutionActionGoal
 import rospy
 import roslib; roslib.load_manifest('exploration_evaluation')
@@ -32,19 +31,15 @@ class ExplorationTester(object):
         # File variables
         self._map_file = None
         self._map_file_writer = None
-        self._victim_file = None
-        self._victim_file_writer = None
 
         # ROS Publishers & Subscribers
-        self._publisher = None
         self.sys_command_publisher = None
         self._behavior_publisher = None
-        self._subscriber = None
         self._map_subscriber = None
 
         rospy.loginfo("Init ExplorationTester")
       
-        self.init_map_and_victim_files()
+        self.init_map_file()
 
         self.init_publishers()
         time.sleep(0.2)    
@@ -54,61 +49,21 @@ class ExplorationTester(object):
         self.send_autonomy_start()
 
 
-    def init_map_and_victim_files(self):
+    def init_map_file(self):
         '''Init file-writers.'''
         self._map_file = open(self.date_string + '_map_data.csv', 'wb')
-        self._map_file_writer = csv.writer(self._map_file)
-
-        self._victim_file = open(self.date_string + '_victim_data.csv', 'wb')
-        self._victim_file_writer = csv.writer(self._victim_file)
+        self._map_file_writer = csv.writer(self._map_file, delimiter=',')
 
 
     def init_publishers(self):
         '''Initializes publishers used during exploration.'''
-        self._publisher = rospy.Publisher("victimAnswer", VictimAnswer, queue_size=5)
         self.sys_command_publisher = rospy.Publisher("syscommand", String, queue_size=5)
         self._behavior_publisher = rospy.Publisher('/flexbe/execute_behavior/goal', BehaviorExecutionActionGoal, queue_size=5)
 
 
-
     def init_subscribers(self):
         '''Initializes subscribers used during exploration.'''
-        self._subscriber = rospy.Subscriber("victimFound", Victims, self.handle_victim_found)
         self._map_subscriber = rospy.Subscriber('scanmatcher_map', OccupancyGrid, self.handle_occupancy_grid)
-
-
-    def handle_victim_found(self, message):
-        '''Callback method for found victims'''
-        if not len(message.victim_ids) == 0:
-            victim_found_time = rospy.Time.now()
-            self.num_victims_found += 1 
-            
-            self.log_new_victim(victim_found_time, message.victim_ids[0])
-            self.confirm_and_publish_victim(message.victim_ids[0])
-
-
-    def log_new_victim(self, victim_found_time, victim_id):
-        '''Logs new vicitm to console and logfile.'''
-        status_msg = "Time " + str((victim_found_time - self.autonomy_start_time).to_sec())
-        status_msg += " received victim found message, id = "
-        status_msg += victim_id
-        rospy.loginfo(status_msg)
-
-        row_to_write = [str((victim_found_time - self.autonomy_start_time).to_sec()), self.num_victims_found]
-        self._victim_file_writer.writerow(row_to_write)
-
-
-    def confirm_and_publish_victim(self, victim_id):
-        '''Confirms victim and publishes confirmation.'''
-        answer = VictimAnswer()
-        answer.task_id = victim_id
-        answer.answer = VictimAnswer.CONFIRM
-
-        self._publisher.publish(answer)
-
-        status_msg = "Confirmed victim with id: "
-        status_msg += victim_id
-        rospy.loginfo(status_msg)
 
 
     def handle_occupancy_grid(self, msg):
@@ -120,7 +75,6 @@ class ExplorationTester(object):
         '''Starts FlexBe exploration behavior and starts callback for logging
         map exploration progress.
         '''
-
         unpause_physics_client = rospy.ServiceProxy('/gazebo/unpause_physics', Empty)
         unpause_physics_client()
         rospy.loginfo("Gazebo sim activated.")
@@ -138,11 +92,13 @@ class ExplorationTester(object):
 
 
     def start_exploration(self):
-        '''Task that starts exploration flexbe behavior.'''
-        rospy.loginfo("FlexBe exploration behavior activated.")
+        '''Starts FlexBe behavior according to param "mission_behavior".'''
         msg = BehaviorExecutionActionGoal()
-        msg.goal.behavior_name = 'Search Victims'
+        #msg.goal.behavior_name = 'Search Victims'
+        mission_full_param_name = rospy.search_param('mission_behavior')
+        msg.goal.behavior_name = rospy.get_param(mission_full_param_name)
         self._behavior_publisher.publish(msg)
+        rospy.loginfo("FlexBe exploration behavior "+ rospy.get_param(mission_full_param_name) +" activated.")
 
 
     def map_timer_callback(self, event):
@@ -169,13 +125,12 @@ class ExplorationTester(object):
             if cell == -1:
                 num_unknown_cells += 1
         
-        return len(self._occupancy_grid.data) - num_unknown_cells
+        return int(len(self._occupancy_grid.data) - num_unknown_cells)
 
 
     def close_file_writers(self):
         '''Closes open file writers.'''
         self._map_file.close()
-        self._victim_file.close()
 
 
 if __name__ == "__main__":
@@ -189,9 +144,14 @@ if __name__ == "__main__":
     exploration_instance = ExplorationTester()
 
     r = rospy.Rate(10) # 10hz
+
+    mission_time_full_param_name = rospy.search_param('mission_sim_time')
+    mission_sim_time_in_sec = int(rospy.get_param(mission_time_full_param_name))
+    rospy.loginfo("Sim will be executed for " + str(mission_sim_time_in_sec) + " seconds.")
     
-    # 600 sec. sim-time.
-    while not (rospy.Time.now() - exploration_instance.autonomy_start_time).to_sec() > 60 * 10:
+    # mission_sim_time_in_sec seconds sim-time.
+    while not ((rospy.Time.now() - exploration_instance.autonomy_start_time).to_sec() 
+               > mission_sim_time_in_sec):
         r.sleep()
     
     exploration_instance.close_file_writers()

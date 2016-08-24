@@ -5,7 +5,6 @@ find_package(catkin REQUIRED COMPONENTS
   hector_worldmodel_msgs
   nav_msgs
   rospy
-  sar_msgs
   task_msgs
   flexbe_msgs
 )
