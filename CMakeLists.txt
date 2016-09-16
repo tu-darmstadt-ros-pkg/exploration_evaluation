@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 2.8.3)
 project(exploration_evaluation)
 
 find_package(catkin REQUIRED COMPONENTS
-  hector_worldmodel_msgs
   nav_msgs
   rospy
   task_msgs
