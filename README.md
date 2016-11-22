@@ -1,4 +1,6 @@
 # exploration_evaluation
+WARNING: THIS REPOSITORY IS OBSOLETE. INSTEAD USE [hector\_ci\_tools](https://github.com/tu-darmstadt-ros-pkg/hector_ci_tools) and [ci\_tools](https://github.com/tu-darmstadt-ros-pkg/ci_tools).
+
 Scripts for evaluation of exploration behaviors.
 
 # Starting the Script with Default Paramters
